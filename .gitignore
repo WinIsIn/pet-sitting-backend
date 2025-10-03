@@ -15,7 +15,7 @@ yarn-error.log*
 uploads/
 !uploads/.gitkeep
 
-# 建置檔案
+# Build files
 frontend/build/
 dist/
 
