@@ -49,23 +49,35 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/pet-sitting
   console.error('MongoDB connection failed:', error);
 });
 
-// 導入路由
-const authRoutes = require('../routes/authRoutes');
-const userRoutes = require('../routes/protectedRoutes');
-const petRoutes = require('../routes/petRoutes');
-const sitterRoutes = require('../routes/sitterRoutes');
-const bookingRoutes = require('../routes/bookingRoutes');
-const postRoutes = require('../routes/postRoutes');
-const uploadRoutes = require('../routes/uploadRoutes');
+// 基本 API 路由
+app.get('/api/auth/login', (req, res) => {
+  res.json({ message: 'Login endpoint' });
+});
 
-// 使用路由
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/pets', petRoutes);
-app.use('/api/sitters', sitterRoutes);
-app.use('/api/bookings', bookingRoutes);
-app.use('/api/posts', postRoutes);
-app.use('/api/upload', uploadRoutes);
+app.post('/api/auth/login', (req, res) => {
+  res.json({ message: 'Login endpoint' });
+});
+
+app.post('/api/auth/register', (req, res) => {
+  res.json({ message: 'Register endpoint' });
+});
+
+app.get('/api/upload', (req, res) => {
+  res.json({ message: 'Upload endpoint' });
+});
+
+app.post('/api/upload', (req, res) => {
+  res.json({ message: 'Upload endpoint' });
+});
+
+// 其他 API 路由
+app.get('/api/*', (req, res) => {
+  res.json({ message: 'API endpoint', path: req.path });
+});
+
+app.post('/api/*', (req, res) => {
+  res.json({ message: 'API endpoint', path: req.path });
+});
 
 module.exports = (req, res) => {
   return serverless(app)(req, res);
