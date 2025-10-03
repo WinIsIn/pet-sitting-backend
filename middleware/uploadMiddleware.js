@@ -1,17 +1,8 @@
 const multer = require('multer');
 const path = require('path');
 
-// 設置存儲配置
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // 圖片存儲目錄
-  },
-  filename: function (req, file, cb) {
-    // 生成唯一文件名
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// 簡化版：使用記憶體儲存，直接回傳 base64 或假 URL
+const storage = multer.memoryStorage();
 
 // 文件過濾器
 const fileFilter = (req, file, cb) => {
@@ -31,7 +22,7 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// 創建 multer 實例
+// 創建 multer 實例（記憶體儲存）
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,

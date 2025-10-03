@@ -1,62 +1,20 @@
 const express = require('express');
-const multer = require('multer');
-const path = require('path');
+const upload = require('../middleware/uploadMiddleware');
 const authenticate = require('../middleware/authMiddleware');
 const router = express.Router();
 
-// 配置 multer 用於圖片上傳
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // 圖片存儲目錄
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-const fileFilter = (req, file, cb) => {
-  // 只允許特定類型的圖片文件
-  const allowedMimes = [
-    'image/jpeg',
-    'image/jpg', 
-    'image/png',
-    'image/gif',
-    'image/webp'
-  ];
-  
-  if (allowedMimes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error('只允許上傳 JPG, PNG, GIF, WebP 格式的圖片文件！'), false);
-  }
-};
-
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB 限制
-    files: 1, // 只允許一個文件
-    fieldSize: 2 * 1024 * 1024, // 2MB 欄位大小限制
-    fieldNameSize: 100, // 欄位名稱長度限制
-    fieldValueSize: 2 * 1024 * 1024 // 欄位值大小限制
-  }
-});
-
-// 圖片上傳端點
+// 圖片上傳端點（返回假 URL）
 router.post('/', authenticate, upload.single('image'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: '沒有上傳文件' });
     }
 
-    // 返回圖片 URL
-    const baseUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
-    const imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
+    // 回傳假 URL（暫時解決方案）
+    const fakeUrl = `https://via.placeholder.com/400x300/cccccc/666666?text=Uploaded+Image`;
     res.json({
-      url: imageUrl,
-      filename: req.file.filename
+      url: fakeUrl,
+      public_id: `img-${Date.now()}-${Math.round(Math.random() * 1e9)}`
     });
   } catch (error) {
     console.error('圖片上傳錯誤:', error);
