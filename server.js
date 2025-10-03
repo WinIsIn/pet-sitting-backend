@@ -4,7 +4,30 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+
+// CORS 設定：允許前端網域
+const allowedOrigins = [
+  'https://pet-sitting-backend-4911.vercel.app',
+  'https://pet-sitting-backend.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5000'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // 允許沒有 origin 的請求（如 Postman）
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 app.use(express.json()); // Support JSON requests
 app.use('/uploads', express.static('uploads')); // Serve static files
 
@@ -106,7 +129,15 @@ const connectDB = async () => {
       process.exit(1);
     }
 
-    const conn = await mongoose.connect(process.env.MONGO_URI);
+    // Allow explicit database selection via env when URI未帶資料庫時會預設為 test
+    const explicitDbName = process.env.DB_NAME && process.env.DB_NAME.trim() !== ''
+      ? process.env.DB_NAME.trim()
+      : undefined;
+
+    const conn = await mongoose.connect(
+      process.env.MONGO_URI,
+      explicitDbName ? { dbName: explicitDbName } : undefined
+    );
 
     console.log(`MongoDB connected: ${conn.connection.host}`);
     console.log(`Database name: ${conn.connection.name}`);
