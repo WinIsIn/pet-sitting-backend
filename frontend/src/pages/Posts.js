@@ -244,7 +244,7 @@ const Posts = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <Avatar 
-            src={post.author?.avatar ? (post.author.avatar.startsWith('http') ? post.author.avatar : `http://localhost:5000/uploads/${post.author.avatar}`) : null}
+            src={post.author?.avatar ? (post.author.avatar.startsWith('http') ? post.author.avatar : `${process.env.REACT_APP_API_URL || ''}/uploads/${post.author.avatar}`) : null}
             icon={<UserOutlined />} 
             style={{ marginRight: '8px' }}
           />
@@ -355,7 +355,7 @@ const Posts = () => {
                 avatar={
                   <Avatar 
                     size="small" 
-                    src={comment.user?.avatar ? (comment.user.avatar.startsWith('http') ? comment.user.avatar : `http://localhost:5000/uploads/${comment.user.avatar}`) : null}
+                    src={comment.user?.avatar ? (comment.user.avatar.startsWith('http') ? comment.user.avatar : `${process.env.REACT_APP_API_URL || ''}/uploads/${comment.user.avatar}`) : null}
                     icon={<UserOutlined />}
                   />
                 }

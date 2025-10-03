@@ -233,7 +233,12 @@ const SitterEdit = () => {
     
     if (info.file.status === 'done') {
       message.success(t('sitterEdit.uploadSuccess'));
-      const imageUrl = info.file.response.url;
+      const resp = info.file?.response || {};
+      const imageUrl = resp.url || resp.secure_url || resp.path || resp.location || resp.data?.url;
+      if (!imageUrl) {
+        message.error(t('sitterEdit.uploadFailed'));
+        return;
+      }
       console.log('圖片上傳成功，URL:', imageUrl);
       
       // 更新表單值
@@ -379,7 +384,7 @@ const SitterEdit = () => {
                     listType="picture-card"
                     showUploadList={true}
                     fileList={fileList}
-                    action="/api/upload"
+                    action={`https://pet-sitting-backend-production.up.railway.app/api/upload`}
                     headers={{
                       'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }}

@@ -61,8 +61,13 @@ const Dashboard = () => {
       
       if (info.file.status === 'done') {
         console.log('上傳響應:', info.file.response);
-        const avatarUrl = info.file.response.url;
+        const resp = info.file?.response || {};
+        const avatarUrl = resp.url || resp.secure_url || resp.path || resp.location || resp.data?.url;
         console.log('圖片上傳成功，URL:', avatarUrl);
+        if (!avatarUrl) {
+          message.error('圖片上傳回應中沒有 URL');
+          return;
+        }
         
         // 更新用戶頭像
         try {
@@ -131,6 +136,14 @@ const Dashboard = () => {
     }
   };
 
+  // 防禦：確保為陣列，避免 .filter/.slice/.map 執行期錯誤
+  const safeBookings = Array.isArray(bookings) ? bookings : [];
+  const safePets = Array.isArray(pets) ? pets : [];
+
+  const completedCount = Array.isArray(bookings)
+    ? bookings.reduce((acc, b) => acc + (b && b.status === 'completed' ? 1 : 0), 0)
+    : 0;
+
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       <Title level={2} style={{ marginBottom: '32px' }}>
@@ -144,7 +157,7 @@ const Dashboard = () => {
             <div style={{ position: 'relative', display: 'inline-block' }}>
               <Avatar 
                 size={64} 
-                src={user?.avatar ? (user.avatar.startsWith('http') ? user.avatar : `http://localhost:5000/uploads/${user.avatar}`) : null}
+                src={user?.avatar ? (user.avatar.startsWith('http') ? user.avatar : `${API_BASE_URL}/uploads/${user.avatar}`) : null}
                 icon={<UserOutlined />} 
               />
               <Button
@@ -182,7 +195,7 @@ const Dashboard = () => {
           <Card>
             <Statistic
               title={t('dashboard.stats.totalBookings')}
-              value={bookings.length}
+              value={safeBookings.length}
               prefix={<CalendarOutlined />}
             />
           </Card>
@@ -191,7 +204,7 @@ const Dashboard = () => {
           <Card>
             <Statistic
               title={t('dashboard.stats.petCount')}
-              value={pets.length}
+              value={safePets.length}
               prefix={<HeartOutlined />}
             />
           </Card>
@@ -200,7 +213,7 @@ const Dashboard = () => {
           <Card>
             <Statistic
               title={t('dashboard.stats.completedBookings')}
-              value={bookings.filter(b => b.status === 'completed').length}
+              value={completedCount}
               prefix={<StarOutlined />}
             />
           </Card>
@@ -216,7 +229,7 @@ const Dashboard = () => {
           >
             <List
               loading={loading}
-              dataSource={bookings.slice(0, 5)}
+              dataSource={safeBookings.slice(0, 5)}
               renderItem={(booking) => (
                 <List.Item>
                   <List.Item.Meta
@@ -249,7 +262,7 @@ const Dashboard = () => {
           >
             <List
               loading={loading}
-              dataSource={pets.slice(0, 5)}
+              dataSource={safePets.slice(0, 5)}
               renderItem={(pet) => (
                 <List.Item>
                   <List.Item.Meta
@@ -318,7 +331,7 @@ const Dashboard = () => {
         <div style={{ textAlign: 'center' }}>
           <Upload
             name="image"
-            action="/api/upload"
+            action={`https://pet-sitting-backend-production.up.railway.app/api/upload`}
             listType="picture-card"
             fileList={fileList}
             onChange={handleAvatarUpload}

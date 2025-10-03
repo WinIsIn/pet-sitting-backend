@@ -9,6 +9,10 @@ const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
 const { Option } = Select;
 
+// 設定 axios 基礎 URL，確保 API 指向後端網域
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+axios.defaults.baseURL = API_BASE_URL;
+
 const Sitters = () => {
   const { t } = useTranslation();
   const [sitters, setSitters] = useState([]);
@@ -49,7 +53,8 @@ const Sitters = () => {
     setFilterType(value);
   };
 
-  const filteredSitters = sitters.filter(sitter => {
+  const safeSitters = Array.isArray(sitters) ? sitters : [];
+  const filteredSitters = safeSitters.filter(sitter => {
     const userName = sitter.user?.name || '';
     const bio = sitter.bio || '';
     const matchesSearch = userName.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -140,7 +145,7 @@ const Sitters = () => {
                 avatar={
                   <Avatar 
                     size={64} 
-                    src={sitter.user?.avatar ? (sitter.user.avatar.startsWith('http') ? sitter.user.avatar : `http://localhost:5000/uploads/${sitter.user.avatar}`) : null}
+                    src={sitter.user?.avatar ? (sitter.user.avatar.startsWith('http') ? sitter.user.avatar : `${process.env.REACT_APP_API_URL || ''}/uploads/${sitter.user.avatar}`) : null}
                     icon={<UserOutlined />}
                     style={{ backgroundColor: '#1890ff' }}
                     onError={() => {
