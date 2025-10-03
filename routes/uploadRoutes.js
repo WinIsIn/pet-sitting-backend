@@ -3,17 +3,19 @@ const upload = require('../middleware/uploadMiddleware');
 const authenticate = require('../middleware/authMiddleware');
 const router = express.Router();
 
-// 圖片上傳端點（返回假 URL）
+// 圖片上傳端點（返回 base64）
 router.post('/', authenticate, upload.single('image'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: '沒有上傳文件' });
     }
 
-    // 回傳假 URL（暫時解決方案）
-    const fakeUrl = `https://via.placeholder.com/400x300/cccccc/666666?text=Uploaded+Image`;
+    // 將圖片轉為 base64
+    const base64 = req.file.buffer.toString('base64');
+    const dataUrl = `data:${req.file.mimetype};base64,${base64}`;
+    
     res.json({
-      url: fakeUrl,
+      url: dataUrl,
       public_id: `img-${Date.now()}-${Math.round(Math.random() * 1e9)}`
     });
   } catch (error) {
