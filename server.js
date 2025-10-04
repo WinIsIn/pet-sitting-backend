@@ -10,7 +10,7 @@ app.use(cors({
   origin: [
     'https://pet-sitting-backend.vercel.app',
     'https://pet-sitting-frontend.vercel.app',
-    'https://pet-sitting-backend-production.up.railway.app',
+    'https://web-production-3ab4f.up.railway.app',
     'http://localhost:3000',
     'http://localhost:5000'
   ],

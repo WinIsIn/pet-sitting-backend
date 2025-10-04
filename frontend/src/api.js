@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// 強制更新：確保使用正確的 Railway 域名
+// 強制更新 v2：確保使用正確的 Railway 域名 - 修復 CORS 問題
 const API_URL = process.env.REACT_APP_API_URL || 'https://web-production-3ab4f.up.railway.app';
 
 // 建立 axios 實例
