@@ -14,7 +14,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # 使用 npm 原生快取路徑，並掛載 cache
-RUN --mount=type=cache,id=${CACHE_KEY}-npm-cache,target=/root/.npm \
+RUN --mount=type=cache,id=s/ed4af55c-b1dc-46f7-860d-1129754ce4c3-npm-cache,target=/root/.npm \
     npm ci --omit=dev
 
 # 再複製專案其他檔案
