@@ -1,13 +1,17 @@
 {
   "name": "pet-sitting-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Pet Sitting Backend API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
     "build": "echo 'No build step required'",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
   },
   "keywords": [],
   "author": "",
