@@ -5,11 +5,22 @@ const router = express.Router();
 
 router.post('/', authenticate, async (req, res) => {
   try {
+    console.log('收到創建保姆資料請求:', req.body);
+    console.log('用戶ID:', req.user.userId);
+    
     const profile = new SitterProfile({ ...req.body, user: req.user.userId });
     await profile.save();
+    
+    console.log('保姆資料創建成功:', profile);
     res.status(201).json(profile);
   } catch (err) {
-    res.status(500).json({ message: '建立保姆資料失敗' });
+    console.error('創建保姆資料錯誤:', err);
+    console.error('錯誤詳情:', err.stack);
+    res.status(500).json({ 
+      message: '建立保姆資料失敗', 
+      error: err.message,
+      details: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 });
 

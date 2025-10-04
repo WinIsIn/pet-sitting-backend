@@ -1,39 +1,27 @@
 const express = require('express');
 const multer = require('multer');
-const { v2: cloudinary } = require('cloudinary');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
 require('dotenv').config();
 
 const router = express.Router();
 
-// ✅ Cloudinary 自動讀取 CLOUDINARY_URL
-cloudinary.config({
-  secure: true,
-});
-
-// ✅ 使用 CloudinaryStorage 取代本地存檔
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: async (req, file) => ({
-    folder: 'pet-sitting/uploads',
-    format: file.mimetype.split('/')[1], // 自動判斷 jpg/png
-    public_id: `post-${Date.now()}`, // 檔名
-    transformation: [{ quality: 'auto', fetch_format: 'auto' }],
-  }),
-});
-
+// 使用記憶體儲存（避免 Cloudinary 依賴問題）
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// ✅ 單張圖片上傳
+// ✅ 單張圖片上傳（使用 base64 編碼）
 router.post('/', upload.single('image'), async (req, res) => {
   try {
-    if (!req.file || !req.file.path) {
+    if (!req.file || !req.file.buffer) {
       return res.status(400).json({ message: '沒有上傳文件' });
     }
 
+    // 將圖片轉換為 base64 格式
+    const base64 = req.file.buffer.toString('base64');
+    const imageUrl = `data:${req.file.mimetype};base64,${base64}`;
+
     return res.status(200).json({
       message: '上傳成功 ✅',
-      imageUrl: req.file.path, // Cloudinary secure URL
+      imageUrl: imageUrl, // Base64 格式的圖片
     });
   } catch (error) {
     console.error('❌ 上傳錯誤:', error);
