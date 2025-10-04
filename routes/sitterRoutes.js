@@ -51,14 +51,14 @@ router.get('/', async (req, res) => {
   }
 });
 
-// 獲取單個保姆資料
-router.get('/:id', async (req, res) => {
+// 獲取當前保姆的資料 (必須在 /:id 之前)
+router.get('/my', authenticate, async (req, res) => {
   try {
-    const sitter = await SitterProfile.findById(req.params.id)
+    const sitter = await SitterProfile.findOne({ user: req.user.userId })
       .populate('user', 'name email avatar');
     
     if (!sitter) {
-      return res.status(404).json({ message: '找不到此保姆資料' });
+      return res.status(404).json({ message: '找不到保姆資料' });
     }
     
     res.json(sitter);
@@ -68,14 +68,14 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// 獲取當前保姆的資料
-router.get('/my', authenticate, async (req, res) => {
+// 獲取單個保姆資料 (必須在 /my 之後)
+router.get('/:id', async (req, res) => {
   try {
-    const sitter = await SitterProfile.findOne({ user: req.user.userId })
+    const sitter = await SitterProfile.findById(req.params.id)
       .populate('user', 'name email avatar');
     
     if (!sitter) {
-      return res.status(404).json({ message: '找不到保姆資料' });
+      return res.status(404).json({ message: '找不到此保姆資料' });
     }
     
     res.json(sitter);
