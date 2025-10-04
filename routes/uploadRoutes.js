@@ -6,20 +6,20 @@ require('dotenv').config();
 
 const router = express.Router();
 
-// ✅ Cloudinary 設定
+// ✅ Cloudinary 自動讀取 CLOUDINARY_URL
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_URL.split('@')[1],
-  api_key: process.env.CLOUDINARY_URL.split('//')[1].split(':')[0],
-  api_secret: process.env.CLOUDINARY_URL.split(':')[2].split('@')[0]
+  secure: true,
 });
 
-// ✅ 設定 multer 使用 Cloudinary Storage
+// ✅ 使用 CloudinaryStorage 取代本地存檔
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
+  cloudinary,
+  params: async (req, file) => ({
     folder: 'pet-sitting/uploads',
-    allowed_formats: ['jpg', 'png', 'jpeg'],
-  },
+    format: file.mimetype.split('/')[1], // 自動判斷 jpg/png
+    public_id: `post-${Date.now()}`, // 檔名
+    transformation: [{ quality: 'auto', fetch_format: 'auto' }],
+  }),
 });
 
 const upload = multer({ storage });
@@ -28,18 +28,17 @@ const upload = multer({ storage });
 router.post('/', upload.single('image'), async (req, res) => {
   try {
     if (!req.file || !req.file.path) {
-      return res.status(400).json({ message: 'No image uploaded' });
+      return res.status(400).json({ message: '沒有上傳文件' });
     }
 
-    res.status(200).json({
-      message: 'Upload successful',
+    return res.status(200).json({
+      message: '上傳成功 ✅',
       imageUrl: req.file.path, // Cloudinary secure URL
     });
   } catch (error) {
-    console.error('Upload failed:', error);
-    res.status(500).json({ message: 'Image upload failed' });
+    console.error('❌ 上傳錯誤:', error);
+    res.status(500).json({ message: 'Image upload failed', error: error.message });
   }
 });
 
 module.exports = router;
-

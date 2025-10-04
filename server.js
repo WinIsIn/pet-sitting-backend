@@ -4,16 +4,37 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
-app.use(express.json()); // Support JSON requests
-app.use('/uploads', express.static('uploads')); // Serve static files
 
-// Basic test route
+// CORS 設定：允許前端網域
+const allowedOrigins = [
+  'https://pet-sitting-frontend.vercel.app', // 你的前端網址
+  'http://localhost:3000' // 本地測試用
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // 允許沒有 origin 的請求（例如 Postman）
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`Blocked by CORS: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
+// 測試路由
 app.get('/', (req, res) => {
-  res.send('Hello from Pet Sitting Platform API!');
+  res.send('Pet Sitting API is running on the cloud!');
 });
 
-// All routes must be defined before connect!
+// 路由設定
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 
@@ -44,93 +65,66 @@ app.use('/api/upload', uploadRoutes);
 // 全域錯誤處理中間件
 app.use((err, req, res, next) => {
   console.error('Global error:', err);
-  
-  // Mongoose validation error
+
   if (err.name === 'ValidationError') {
     const errors = Object.values(err.errors).map(e => e.message);
-    return res.status(400).json({ 
-      message: 'Data validation failed', 
-      errors 
-    });
+    return res.status(400).json({ message: 'Data validation failed', errors });
   }
-  
-  // Mongoose duplicate key error
+
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue)[0];
-    return res.status(400).json({ 
-      message: `${field} already exists` 
-    });
+    return res.status(400).json({ message: `${field} already exists` });
   }
-  
-  // JWT error
+
   if (err.name === 'JsonWebTokenError') {
-    return res.status(401).json({ 
-      message: 'Invalid token' 
-    });
+    return res.status(401).json({ message: 'Invalid token' });
   }
-  
+
   if (err.name === 'TokenExpiredError') {
-    return res.status(401).json({ 
-      message: 'Token expired' 
-    });
+    return res.status(401).json({ message: 'Token expired' });
   }
-  
-  // Default error
-  res.status(500).json({ 
-    message: 'Internal server error' 
-  });
+
+  res.status(500).json({ message: 'Internal server error' });
 });
 
-// 404 handler
+// 404 處理
 app.use((req, res) => {
-  res.status(404).json({ 
-    message: 'Resource not found' 
-  });
+  res.status(404).json({ message: 'Resource not found' });
 });
 
-// MongoDB connection configuration
+// MongoDB 連線設定
 const connectDB = async () => {
   try {
-    // Check environment variables
     if (!process.env.MONGO_URI) {
-      console.error('Error: MONGO_URI environment variable not set');
-      console.log('Please create .env file and set MONGO_URI');
-      console.log('Example: MONGO_URI=mongodb://localhost:27017/pet-sitting');
+      console.error('MONGO_URI not set');
       process.exit(1);
     }
 
     if (!process.env.JWT_SECRET) {
-      console.error('Error: JWT_SECRET environment variable not set');
-      console.log('Please create .env file and set JWT_SECRET');
-      console.log('Example: JWT_SECRET=your-secret-key-here');
+      console.error('JWT_SECRET not set');
       process.exit(1);
     }
 
-    const conn = await mongoose.connect(process.env.MONGO_URI);
+    // 連線 MongoDB Atlas
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      dbName: process.env.DB_NAME || 'pet_sitting'
+    });
 
     console.log(`MongoDB connected: ${conn.connection.host}`);
-    console.log(`Database name: ${conn.connection.name}`);
-    
-    // Start server
+    console.log(`Database: ${conn.connection.name}`);
+
+    // 使用 Railway 自動提供的 PORT
     const PORT = process.env.PORT || 5000;
-    
     app.listen(PORT, () => {
-      console.log(`Server started on port ${PORT}`);
-      console.log(`API endpoint: http://localhost:${PORT}`);
+      console.log(`Server running on port ${PORT}`);
     });
-    
+
   } catch (error) {
     console.error('MongoDB connection failed:', error.message);
-    console.log('\nTroubleshooting suggestions:');
-    console.log('1. Check if MongoDB service is running');
-    console.log('2. Check if MONGO_URI connection string is correct');
-    console.log('3. Check network connection and firewall settings');
     process.exit(1);
   }
 };
 
-// Connect to database
 connectDB();
 
-// Export app for cloud platforms
 module.exports = app;
