@@ -16,7 +16,8 @@ app.use(cors({
   ],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma'],
-  credentials: true
+  credentials: true,
+  optionsSuccessStatus: 200 // 支援舊版瀏覽器
 }));
 
 app.use(express.json({ limit: '10mb' }));
