@@ -17,3 +17,6 @@ logs
 *.log
 .DS_Store
 Thumbs.db
+.cache
+.npm
+node_modules/.cache
