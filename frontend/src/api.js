@@ -5,6 +5,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 // 建立 axios 實例
 const api = axios.create({
   baseURL: API_URL,
+  timeout: 30000, // 30 秒超時
   headers: { 
     'Content-Type': 'application/json' 
   }

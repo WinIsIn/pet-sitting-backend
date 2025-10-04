@@ -73,6 +73,7 @@ const Posts = () => {
   // ✅ 建立或更新貼文
   const handleCreateOrUpdatePost = async (values) => {
     try {
+      setLoading(true); // 開始載入
       const formData = new FormData();
       formData.append('content', values.content);
       if (values.petType) formData.append('petType', values.petType);
@@ -115,6 +116,8 @@ const Posts = () => {
           ': ' +
           (error.response?.data?.message || error.message)
       );
+    } finally {
+      setLoading(false); // 結束載入
     }
   };
 
