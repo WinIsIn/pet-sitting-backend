@@ -61,7 +61,7 @@ const Dashboard = () => {
       
       if (info.file.status === 'done') {
         console.log('上傳響應:', info.file.response);
-        const avatarUrl = info.file.response.url;
+        const avatarUrl = info.file.response.imageUrl || info.file.response.url;
         console.log('圖片上傳成功，URL:', avatarUrl);
         
         // 更新用戶頭像
