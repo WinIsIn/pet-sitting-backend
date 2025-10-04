@@ -5,24 +5,11 @@ require('dotenv').config();
 
 const app = express();
 
-// CORS 設定：允許前端網域
-const allowedOrigins = [
-  'https://pet-sitting-frontend.vercel.app', // 你的前端網址
-  'http://localhost:3000' // 本地測試用
-];
-
+// CORS 設定：允許所有來源（Railway 部署用）
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // 允許沒有 origin 的請求（例如 Postman）
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.warn(`Blocked by CORS: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true, // 允許所有來源
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma'],
   credentials: true
 }));
 
@@ -126,5 +113,11 @@ const connectDB = async () => {
 };
 
 connectDB();
+
+// 啟動伺服器
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 module.exports = app;
