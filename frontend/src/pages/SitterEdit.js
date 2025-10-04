@@ -233,7 +233,7 @@ const SitterEdit = () => {
     
     if (info.file.status === 'done') {
       message.success(t('sitterEdit.uploadSuccess'));
-      const imageUrl = info.file.response.url;
+      const imageUrl = info.file.response.imageUrl || info.file.response.url;
       console.log('圖片上傳成功，URL:', imageUrl);
       
       // 更新表單值
@@ -310,6 +310,11 @@ const SitterEdit = () => {
             Object.keys(changedValues).forEach(key => {
               updatePreviewData(key, changedValues[key]);
             });
+            // 同時更新整個預覽數據，確保所有字段都同步
+            setPreviewData(prev => ({
+              ...prev,
+              ...allValues
+            }));
           }}
         >
           <Row gutter={[24, 0]}>
@@ -413,7 +418,7 @@ const SitterEdit = () => {
                 <div style={{ textAlign: 'center', marginBottom: '16px' }}>
                   {previewData.imageUrl ? (
                     <img 
-                      src={previewData.imageUrl} 
+                      src={previewData.imageUrl.startsWith('data:') ? previewData.imageUrl : previewData.imageUrl} 
                       alt={t('sitterEdit.personalPhoto')}
                       style={{ 
                         width: '80px', 
@@ -422,6 +427,10 @@ const SitterEdit = () => {
                         objectFit: 'cover',
                         margin: '0 auto 12px',
                         display: 'block'
+                      }}
+                      onError={(e) => {
+                        console.log('圖片載入失敗:', previewData.imageUrl);
+                        e.target.style.display = 'none';
                       }}
                     />
                   ) : (
@@ -455,10 +464,14 @@ const SitterEdit = () => {
                 <div style={{ marginBottom: '12px' }}>
                   <Text type="secondary">{t('sitterEdit.serviceSpecialties')}</Text>
                   <div style={{ marginTop: '4px' }}>
-                    {previewData.services?.map(service => {
-                      const option = getPetTypeOptions().find(opt => opt.value === service);
-                      return option ? option.label : service;
-                    }).join(', ') || t('sitterEdit.defaultSpecialties')}
+                    {previewData.services && previewData.services.length > 0 ? (
+                      previewData.services.map(service => {
+                        const option = getPetTypeOptions().find(opt => opt.value === service);
+                        return option ? option.label : service;
+                      }).join(', ')
+                    ) : (
+                      t('sitterEdit.defaultSpecialties')
+                    )}
                   </div>
                 </div>
 
