@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 // 配置 axios 基礎 URL
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://web-production-3ab4f.up.railway.app';
 axios.defaults.baseURL = API_BASE_URL;
 
 const AuthContext = createContext();

@@ -140,7 +140,7 @@ const Sitters = () => {
                 avatar={
                   <Avatar 
                     size={64} 
-                    src={sitter.user?.avatar ? (sitter.user.avatar.startsWith('http') ? sitter.user.avatar : `http://localhost:5000/uploads/${sitter.user.avatar}`) : null}
+                    src={sitter.user?.avatar ? (sitter.user.avatar.startsWith('http') ? sitter.user.avatar : `${process.env.REACT_APP_API_URL || 'https://web-production-3ab4f.up.railway.app'}/uploads/${sitter.user.avatar}`) : null}
                     icon={<UserOutlined />}
                     style={{ backgroundColor: '#1890ff' }}
                     onError={() => {

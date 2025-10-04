@@ -7,7 +7,7 @@ import axios from 'axios';
 import { useTranslation } from '../hooks/useTranslation';
 
 // 配置 axios 基礎 URL
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://web-production-3ab4f.up.railway.app';
 axios.defaults.baseURL = API_BASE_URL;
 
 const { Title, Text } = Typography;
@@ -144,7 +144,7 @@ const Dashboard = () => {
             <div style={{ position: 'relative', display: 'inline-block' }}>
               <Avatar 
                 size={64} 
-                src={user?.avatar ? (user.avatar.startsWith('http') ? user.avatar : `http://localhost:5000/uploads/${user.avatar}`) : null}
+                src={user?.avatar ? (user.avatar.startsWith('http') ? user.avatar : `${API_BASE_URL}/uploads/${user.avatar}`) : null}
                 icon={<UserOutlined />} 
               />
               <Button
