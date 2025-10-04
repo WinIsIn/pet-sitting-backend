@@ -379,7 +379,7 @@ const SitterEdit = () => {
                     listType="picture-card"
                     showUploadList={true}
                     fileList={fileList}
-                    action="/api/upload"
+                    action={`${process.env.REACT_APP_API_URL}/api/upload`}
                     headers={{
                       'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }}
