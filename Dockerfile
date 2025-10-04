@@ -1,19 +1,36 @@
-# 使用 Node.js 20 官方映像
-FROM node:20-alpine
+# syntax=docker/dockerfile:1.4
 
-# 設置工作目錄
+# =========================
+# Stage 0: Build
+# =========================
+FROM node:20 AS build
+
+# 可讓 Cloud Build 傳入 cache key 前綴
+ARG CACHE_KEY
+
 WORKDIR /app
 
-# 複製 package 文件
+# 只複製 package 檔案以便使用快取
 COPY package*.json ./
 
-# 安裝依賴
-RUN npm ci --omit=dev
+# 使用 npm 原生快取路徑，並掛載 cache
+RUN --mount=type=cache,id=${CACHE_KEY}-npm-cache,target=/root/.npm \
+    npm ci --omit=dev
 
-# 複製應用程式代碼
+# 再複製專案其他檔案
 COPY . .
 
-# 暴露端口
+# =========================
+# Stage 1: Runtime
+# =========================
+FROM node:20-slim AS runtime
+
+WORKDIR /app
+
+# 複製 build 階段的結果
+COPY --from=build /app ./
+
+# 開放 port（可依專案設定）
 EXPOSE 5000
 
 # 啟動應用程式

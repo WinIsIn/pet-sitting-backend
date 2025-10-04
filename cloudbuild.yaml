@@ -1,0 +1,19 @@
+steps:
+  # 建立 Docker image 並啟用 BuildKit cache
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'build',
+        '--tag', 'gcr.io/$PROJECT_ID/pet-sitting-backend',
+        '--build-arg', 'CACHE_KEY=s/ed4af55c-b1dc-46f7-860d-1129754ce4c3',
+        '--file', 'Dockerfile',
+        '.'
+      ]
+    env:
+      - DOCKER_BUILDKIT=1
+
+images:
+  - 'gcr.io/$PROJECT_ID/pet-sitting-backend'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
