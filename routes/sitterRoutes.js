@@ -92,7 +92,12 @@ router.put('/my', authenticate, async (req, res) => {
     res.json(sitter);
   } catch (err) {
     console.error('更新保姆資料錯誤:', err);
-    res.status(500).json({ message: '更新保姆資料失敗', error: err.message });
+    console.error('錯誤詳情:', err.stack);
+    res.status(500).json({ 
+      message: '更新保姆資料失敗', 
+      error: err.message,
+      details: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 });
 
