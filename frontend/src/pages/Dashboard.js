@@ -318,7 +318,7 @@ const Dashboard = () => {
         <div style={{ textAlign: 'center' }}>
           <Upload
             name="image"
-            action={`${process.env.REACT_APP_API_URL || 'https://pet-sitting-backend-production.up.railway.app'}/api/upload`}
+            action={`${process.env.REACT_APP_API_URL || 'https://web-production-3ab4f.up.railway.app'}/api/upload`}
             listType="picture-card"
             fileList={fileList}
             onChange={handleAvatarUpload}

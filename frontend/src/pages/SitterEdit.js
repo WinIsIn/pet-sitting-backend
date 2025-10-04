@@ -397,7 +397,7 @@ const SitterEdit = () => {
                     listType="picture-card"
                     showUploadList={true}
                     fileList={fileList}
-                    action={`${process.env.REACT_APP_API_URL}/api/upload`}
+                    action={`${process.env.REACT_APP_API_URL || 'https://web-production-3ab4f.up.railway.app'}/api/upload`}
                     headers={{
                       'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }}
