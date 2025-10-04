@@ -20,3 +20,5 @@ Thumbs.db
 .cache
 .npm
 node_modules/.cache
+.nixpacks
+nixpacks.toml
