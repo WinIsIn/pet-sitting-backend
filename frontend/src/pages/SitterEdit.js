@@ -164,12 +164,25 @@ const SitterEdit = () => {
       console.log('用戶信息:', user);
       
       // 確保所有必要字段都有值
+      let imageUrl = values.imageUrl || form.getFieldValue('imageUrl') || '';
+      
+      // 如果 imageUrl 是對象，提取實際的 URL
+      if (typeof imageUrl === 'object' && imageUrl !== null) {
+        if (imageUrl.file && imageUrl.file.response) {
+          imageUrl = imageUrl.file.response.imageUrl || imageUrl.file.response.url || '';
+        } else if (imageUrl.url) {
+          imageUrl = imageUrl.url;
+        } else {
+          imageUrl = '';
+        }
+      }
+      
       const submitData = {
         bio: values.bio || '',
         services: values.services || [],
         ratePerDay: values.ratePerDay || 50,
         location: values.location || '',
-        imageUrl: values.imageUrl || form.getFieldValue('imageUrl') || ''
+        imageUrl: imageUrl
       };
       
       console.log('準備提交的數據:', submitData);
