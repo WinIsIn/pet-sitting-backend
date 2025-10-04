@@ -7,7 +7,12 @@ const app = express();
 
 // CORS 設定：允許所有來源（Railway 部署用）
 app.use(cors({
-  origin: true, // 允許所有來源
+  origin: [
+    'https://pet-sitting-backend.vercel.app',
+    'https://pet-sitting-frontend.vercel.app', 
+    'http://localhost:3000',
+    'http://localhost:5000'
+  ],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma'],
   credentials: true

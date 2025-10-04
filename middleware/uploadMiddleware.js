@@ -1,17 +1,8 @@
 const multer = require('multer');
 const path = require('path');
 
-// 設置存儲配置
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // 圖片存儲目錄
-  },
-  filename: function (req, file, cb) {
-    // 生成唯一文件名
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// 使用記憶體儲存（Railway 部署用）
+const storage = multer.memoryStorage();
 
 // 文件過濾器
 const fileFilter = (req, file, cb) => {

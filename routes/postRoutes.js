@@ -48,9 +48,11 @@ router.post('/', authenticate, (req, res, next) => {
   try {
     const { content, petType, location, tags } = req.body;
     
-    // 處理圖片路徑
-    const baseUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
-    const images = req.files ? req.files.map(file => `${baseUrl}/uploads/${file.filename}`) : [];
+    // 處理圖片路徑 - 使用 base64 格式
+    const images = req.files ? req.files.map(file => {
+      const base64 = file.buffer.toString('base64');
+      return `data:${file.mimetype};base64,${base64}`;
+    }) : [];
     
     // 處理標籤
     const tagsArray = tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
