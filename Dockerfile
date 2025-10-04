@@ -7,9 +7,8 @@ WORKDIR /app
 # 複製 package 文件
 COPY package*.json ./
 
-# 安裝依賴（使用緩存掛載）
-RUN --mount=type=cache,id=cache/npm-cache,target=/root/.npm \
-    npm ci --omit=dev
+# 安裝依賴
+RUN npm ci --omit=dev
 
 # 複製應用程式代碼
 COPY . .
