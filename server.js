@@ -108,12 +108,6 @@ const connectDB = async () => {
     console.log(`MongoDB connected: ${conn.connection.host}`);
     console.log(`Database: ${conn.connection.name}`);
 
-    // 使用 Railway 自動提供的 PORT
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-
   } catch (error) {
     console.error('MongoDB connection failed:', error.message);
     process.exit(1);
@@ -121,5 +115,13 @@ const connectDB = async () => {
 };
 
 connectDB();
+
+// 啟動伺服器（僅在直接運行此文件時）
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
 module.exports = app;
