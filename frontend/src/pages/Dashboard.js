@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTranslation } from '../hooks/useTranslation';
 
-// 配置 axios 基礎 URL
+// 配置 axios 基礎 URL - 強制更新確保使用正確域名
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://web-production-3ab4f.up.railway.app';
 axios.defaults.baseURL = API_BASE_URL;
 

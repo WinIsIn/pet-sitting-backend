@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// 強制更新：確保使用正確的 Railway 域名
 const API_URL = process.env.REACT_APP_API_URL || 'https://web-production-3ab4f.up.railway.app';
 
 // 建立 axios 實例
