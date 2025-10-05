@@ -288,6 +288,83 @@ const Posts = () => {
               </Image.PreviewGroup>
             </div>
           )}
+
+          {/* 互動操作：按讚、留言數 */}
+          <div style={{ marginTop: 12, display: 'flex', gap: 16 }}>
+            <Button
+              type="text"
+              icon={
+                post.likes?.some((u) => (u?._id || u) === user?.id) ? (
+                  <HeartFilled style={{ color: '#eb2f96' }} />
+                ) : (
+                  <HeartOutlined />
+                )
+              }
+              onClick={() => handleLike(post._id)}
+            >
+              {post.likes?.length || 0}
+            </Button>
+            <Button type="text" icon={<MessageOutlined />}> {post.comments?.length || 0}</Button>
+          </div>
+
+          {/* 留言列表 */}
+          <Divider style={{ margin: '16px 0' }} />
+          <List
+            dataSource={post.comments || []}
+            locale={{ emptyText: null }}
+            renderItem={(comment) => (
+              <List.Item
+                actions={
+                  comment.user?._id === user?.id
+                    ? [
+                        <Button
+                          type="link"
+                          danger
+                          size="small"
+                          onClick={() => handleDeleteComment(post._id, comment._id)}
+                        >
+                          {t('common.delete')}
+                        </Button>,
+                      ]
+                    : []
+                }
+              >
+                <List.Item.Meta
+                  avatar={<Avatar src={comment.user?.avatar} icon={<UserOutlined />} />}
+                  title={
+                    <span>
+                      {comment.user?.name}{' '}
+                      <Text type="secondary" style={{ marginLeft: 8, fontSize: 12 }}>
+                        {new Date(comment.createdAt).toLocaleString()}
+                      </Text>
+                    </span>
+                  }
+                  description={comment.content}
+                />
+              </List.Item>
+            )}
+          />
+
+          {/* 新增留言 */}
+          {user && (
+            <Form
+              layout="vertical"
+              onFinish={(values) => {
+                if (!values.comment || !values.comment.trim()) return;
+                handleComment(post._id, values.comment.trim());
+              }}
+              style={{ marginTop: 8 }}
+            >
+              <Form.Item name="comment">
+                <TextArea rows={2} placeholder={t('posts.addComment')} />
+              </Form.Item>
+              <Form.Item style={{ marginBottom: 0 }}>
+                <Button type="primary" htmlType="submit" icon={<MessageOutlined />}>
+                  {t('common.submit')}
+                </Button>
+              </Form.Item>
+            </Form>
+          )}
         </Card>
       ))}
 
