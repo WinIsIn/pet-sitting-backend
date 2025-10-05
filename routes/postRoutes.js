@@ -9,7 +9,8 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const { page = 1, limit = 10, petType, tags } = req.query;
-    const query = { isPublic: true };
+    // 顯示所有貼文（不再限定 isPublic）
+    const query = {};
     
     if (petType) query.petType = petType;
     if (tags) query.tags = { $in: tags.split(',') };
