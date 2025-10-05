@@ -313,10 +313,12 @@ const Posts = () => {
           </div>
 
           {/* 留言列表 */}
-          <Divider style={{ margin: '16px 0' }} />
+          <Divider orientation="left" style={{ margin: '16px 0' }}>
+            {t('posts.comments')}
+          </Divider>
           <List
             dataSource={Array.isArray(post.comments) ? post.comments : []}
-            locale={{ emptyText: null }}
+            locale={{ emptyText: t('posts.noComments') }}
             renderItem={(comment, idx) => (
               <List.Item
                 actions={
@@ -359,6 +361,7 @@ const Posts = () => {
                 handleComment(post._id, values.comment.trim());
               }}
               style={{ marginTop: 8 }}
+              key={`${post._id}-${post.comments?.length || 0}`}
             >
               <Form.Item name="comment">
                 <TextArea rows={2} placeholder={t('posts.addComment')} />
