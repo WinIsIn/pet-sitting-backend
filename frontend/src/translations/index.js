@@ -49,10 +49,10 @@ export const translations = {
 
     // 首頁
     home: {
-      title: 'Welcome to Pet Sitting Platform',
-      subtitle: 'Find the perfect professional sitter for your furry friends, so you can go out with peace of mind while your pets stay happy at home',
-      registerNow: 'Register Now',
-      loginAccount: 'Login Account',
+      title: '歡迎來到寵物保姆平台',
+      subtitle: '為您的毛孩找到合適的專業保姆，讓您外出安心、毛孩在家開心',
+      registerNow: '立即註冊',
+      loginAccount: '登入帳號',
       findSitter: '尋找保姆',
       viewBookings: '查看預約',
       whyChooseUs: '為什麼選擇我們？',
