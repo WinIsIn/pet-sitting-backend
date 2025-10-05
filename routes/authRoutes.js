@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const authenticate = require('../middleware/authMiddleware');
 const SitterProfile = require('../models/SitterProfile');
 const { validate, registerSchema, loginSchema } = require('../middleware/validationMiddleware');
 
@@ -94,3 +95,32 @@ router.post('/login', validate(loginSchema), async (req, res) => {
 });
 
 module.exports = router;
+
+// 更新個人資料（目前僅支援 avatar）
+router.put('/profile', authenticate, async (req, res) => {
+  try {
+    const { avatar } = req.body;
+    if (!avatar) {
+      return res.status(400).json({ message: '缺少頭像 URL' });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.userId,
+      { avatar },
+      { new: true }
+    );
+
+    if (!user) return res.status(404).json({ message: '找不到使用者' });
+
+    res.json({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      avatar: user.avatar || null
+    });
+  } catch (err) {
+    console.error('更新個人資料錯誤:', err);
+    res.status(500).json({ message: '伺服器錯誤' });
+  }
+});
