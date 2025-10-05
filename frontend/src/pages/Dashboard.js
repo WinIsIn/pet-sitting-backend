@@ -77,6 +77,10 @@ const Dashboard = () => {
           });
           
           console.log('用戶頭像更新成功，響應:', response.data);
+          // 同步更新本地 user
+          const updated = { ...(JSON.parse(localStorage.getItem('user') || '{}')), avatar: avatarUrl };
+          localStorage.setItem('user', JSON.stringify(updated));
+          updateUser(updated);
         } catch (updateError) {
           console.error('更新用戶頭像失敗:', updateError);
           console.error('錯誤詳情:', updateError.response?.data);

@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const SitterProfile = require('../models/SitterProfile');
 const { validate, registerSchema, loginSchema } = require('../middleware/validationMiddleware');
-const authenticate = require('../middleware/authMiddleware');
 
 // 註冊 API
 router.post('/register', validate(registerSchema), async (req, res) => {
@@ -83,44 +82,14 @@ router.post('/login', validate(loginSchema), async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        avatar: user.avatar || null
       }
     });
 
   } catch (err) {
     console.error('登入錯誤:', err);
     res.status(500).json({ message: '伺服器錯誤' });
-  }
-});
-
-// 更新用戶資料 API
-router.put('/profile', authenticate, async (req, res) => {
-  try {
-    console.log('收到更新用戶資料請求:', req.body);
-    console.log('用戶ID:', req.user.userId);
-    
-    const { avatar } = req.body;
-    
-    if (!avatar) {
-      return res.status(400).json({ message: '缺少頭像 URL' });
-    }
-    
-    const user = await User.findByIdAndUpdate(
-      req.user.userId,
-      { avatar },
-      { new: true }
-    );
-    
-    if (!user) {
-      console.log('用戶不存在，ID:', req.user.userId);
-      return res.status(404).json({ message: '用戶不存在' });
-    }
-    
-    console.log('用戶資料更新成功:', user);
-    res.json({ message: '資料更新成功', user });
-  } catch (err) {
-    console.error('更新用戶資料錯誤:', err);
-    res.status(500).json({ message: '更新失敗', error: err.message });
   }
 });
 
