@@ -17,7 +17,8 @@ import {
   Image,
   List,
   Divider,
-  Popconfirm
+  Popconfirm,
+  Pagination
 } from 'antd';
 import { 
   PlusOutlined, 
@@ -51,6 +52,7 @@ const Posts = () => {
   const [fileList, setFileList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
     fetchPosts();
@@ -62,6 +64,7 @@ const Posts = () => {
       const response = await api.get(`/api/posts?page=${currentPage}&limit=10`);
       setPosts(response.data.posts);
       setTotalPages(response.data.totalPages);
+      setTotalItems(response.data.total || 0);
     } catch (error) {
       console.error('獲取貼文失敗:', error);
       message.error(t('posts.messages.fetchFailed'));
@@ -369,6 +372,20 @@ const Posts = () => {
           )}
         </Card>
       ))}
+
+      {/* 分頁控制 */}
+      <div style={{ display: 'flex', justifyContent: 'center', margin: '24px 0' }}>
+        <Pagination
+          current={currentPage}
+          total={totalItems}
+          pageSize={10}
+          showSizeChanger={false}
+          onChange={(page) => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setCurrentPage(page);
+          }}
+        />
+      </div>
 
       {/* 貼文建立/編輯 Modal */}
       <Modal
