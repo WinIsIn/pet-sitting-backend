@@ -204,7 +204,19 @@ const SitterEdit = () => {
           layout="vertical"
           onFinish={handleSubmit}
           onValuesChange={(changedValues, allValues) => {
-            setPreviewData(prev => ({ ...prev, ...allValues }));
+            // 將 imageUrl 正規化為字串，避免出現 startsWith 不是函式的錯誤
+            const normalized = { ...allValues };
+            if (Object.prototype.hasOwnProperty.call(changedValues, 'imageUrl')) {
+              const v = changedValues.imageUrl;
+              let url = '';
+              if (typeof v === 'string') {
+                url = v;
+              } else if (v && typeof v === 'object') {
+                url = v.file?.response?.imageUrl || v.file?.response?.url || v.url || '';
+              }
+              normalized.imageUrl = url;
+            }
+            setPreviewData(prev => ({ ...prev, ...normalized }));
           }}
         >
           <Row gutter={[24, 0]}>
@@ -240,7 +252,16 @@ const SitterEdit = () => {
               </Card>
 
               <Card title={t('sitterEdit.photoDisplay')}>
-                <Form.Item name="imageUrl" label={t('sitterEdit.personalPhoto')}>
+                <Form.Item
+                  name="imageUrl"
+                  label={t('sitterEdit.personalPhoto')}
+                  // 將 Upload 的事件轉成字串 URL 存入表單
+                  getValueFromEvent={(e) => {
+                    if (!e) return form.getFieldValue('imageUrl') || '';
+                    const url = e.file?.response?.imageUrl || e.file?.response?.url || e.file?.url || '';
+                    return url;
+                  }}
+                >
                   <Upload
                     name="image"
                     listType="picture-card"
