@@ -12,8 +12,7 @@ import {
   Col, 
   Divider, 
   message,
-  Spin,
-  Image
+  Spin
 } from 'antd';
 import { 
   ArrowLeftOutlined, 
@@ -208,17 +207,7 @@ const SitterProfile = () => {
               </div>
             )}
 
-            {/* 圖片展示 */}
-            {sitter.imageUrl && (
-              <div style={{ marginBottom: '24px' }}>
-                <Title level={4}>{t('sitterProfile.photoDisplay')}</Title>
-                <Image
-                  src={sitter.imageUrl}
-                  alt="保姆照片"
-                  style={{ width: '100%', maxWidth: '400px', borderRadius: '8px' }}
-                />
-              </div>
-            )}
+            {/* 照片展示功能已移除 */}
           </Card>
         </Col>
 
