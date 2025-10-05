@@ -271,19 +271,21 @@ const Posts = () => {
           {post.location && <Tag color="green">{post.location}</Tag>}
           {post.petType && <Tag color="purple">{post.petType}</Tag>}
 
-          {post.images?.length > 0 && (
+          {Array.isArray(post.images) && post.images.length > 0 && (
             <div style={{ marginTop: '12px' }}>
               <Image.PreviewGroup>
                 <Row gutter={[8, 8]}>
-                  {post.images.map((image, index) => (
-                    <Col key={index} span={post.images.length === 1 ? 24 : 12}>
-                      <Image
-                        src={image}
-                        alt={`post-image-${index}`}
-                        style={{ width: '100%', borderRadius: '8px' }}
-                      />
-                    </Col>
-                  ))}
+                  {post.images
+                    .filter((url) => typeof url === 'string' && (url.startsWith('https://') || url.startsWith('http://') || url.startsWith('data:')) && !url.includes('localhost') && !url.includes('undefined'))
+                    .map((image, index) => (
+                      <Col key={index} span={post.images.length === 1 ? 24 : 12}>
+                        <Image
+                          src={image}
+                          alt={`post-image-${index}`}
+                          style={{ width: '100%', borderRadius: '8px' }}
+                        />
+                      </Col>
+                    ))}
                 </Row>
               </Image.PreviewGroup>
             </div>
@@ -310,12 +312,12 @@ const Posts = () => {
           {/* 留言列表 */}
           <Divider style={{ margin: '16px 0' }} />
           <List
-            dataSource={post.comments || []}
+            dataSource={Array.isArray(post.comments) ? post.comments : []}
             locale={{ emptyText: null }}
-            renderItem={(comment) => (
+            renderItem={(comment, idx) => (
               <List.Item
                 actions={
-                  comment.user?._id === user?.id
+                  (comment.user?._id || comment.user) === user?.id
                     ? [
                         <Button
                           type="link"
@@ -333,7 +335,7 @@ const Posts = () => {
                   avatar={<Avatar src={comment.user?.avatar} icon={<UserOutlined />} />}
                   title={
                     <span>
-                      {comment.user?.name}{' '}
+                      {comment.user?.name || t('common.unknown')}{' '}
                       <Text type="secondary" style={{ marginLeft: 8, fontSize: 12 }}>
                         {new Date(comment.createdAt).toLocaleString()}
                       </Text>
