@@ -53,8 +53,8 @@ export const translations = {
       subtitle: 'Find the perfect professional sitter for your furry friends, so you can go out with peace of mind while your pets stay happy at home',
       registerNow: 'Register Now',
       loginAccount: 'Login Account',
-      findSitter: 'Find Sitter',
-      viewBookings: 'View Bookings',
+      findSitter: '尋找保姆',
+      viewBookings: '查看預約',
       whyChooseUs: '為什麼選擇我們？',
       howToUse: '如何使用我們的服務？',
       platformStats: '平台數據',
@@ -188,9 +188,9 @@ export const translations = {
       },
       quickActions: {
         title: '快速操作',
-        findSitter: 'Find Sitter',
+        findSitter: '尋找保姆',
         findPets: '尋找需要寄養的寵物',
-        viewBookings: 'View Bookings',
+        viewBookings: '查看預約',
         managePets: '管理寵物',
         manageProfile: '管理個人資料'
       },
