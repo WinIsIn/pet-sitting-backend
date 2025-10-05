@@ -148,7 +148,7 @@ const Dashboard = () => {
             <div style={{ position: 'relative', display: 'inline-block' }}>
               <Avatar 
                 size={64} 
-                src={user?.avatar ? (user.avatar.startsWith('http') ? user.avatar : `${API_BASE_URL}/uploads/${user.avatar}`) : null}
+                src={user?.avatar || null}
                 icon={<UserOutlined />} 
               />
               <Button
