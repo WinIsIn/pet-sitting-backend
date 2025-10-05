@@ -7,7 +7,6 @@ import {
   Button, 
   Select, 
   InputNumber, 
-  Upload, 
   message, 
   Row, 
   Col, 
@@ -17,7 +16,6 @@ import {
 } from 'antd';
 import { 
   ArrowLeftOutlined, 
-  UploadOutlined, 
   SaveOutlined,
   UserOutlined
 } from '@ant-design/icons';
@@ -36,13 +34,11 @@ const SitterEdit = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [sitterProfile, setSitterProfile] = useState(null);
-  const [fileList, setFileList] = useState([]);
   const [previewData, setPreviewData] = useState({
     bio: '',
     services: [],
     ratePerDay: 50,
-    location: 'Hamilton',
-    imageUrl: ''
+    location: 'Hamilton'
   });
 
   useEffect(() => {
@@ -81,21 +77,11 @@ const SitterEdit = () => {
           bio: response.data.bio || '',
           services: response.data.services || ['dog', 'cat'],
           ratePerDay: response.data.ratePerDay || 50,
-          location: response.data.location || 'Hamilton',
-          imageUrl: response.data.imageUrl || ''
+          location: response.data.location || 'Hamilton'
         };
 
         form.setFieldsValue(formData);
         setPreviewData(formData);
-
-        if (formData.imageUrl) {
-          setFileList([{
-            uid: '-1',
-            name: 'image.jpg',
-            status: 'done',
-            url: formData.imageUrl
-          }]);
-        }
       } catch (err) {
         console.error('保姆資料獲取失敗:', err);
       }
@@ -114,24 +100,11 @@ const SitterEdit = () => {
         return;
       }
 
-      let imageUrl = values.imageUrl || form.getFieldValue('imageUrl') || '';
-
-      if (typeof imageUrl === 'object' && imageUrl !== null) {
-        if (imageUrl.file?.response?.imageUrl) {
-          imageUrl = imageUrl.file.response.imageUrl;
-        } else if (imageUrl.url) {
-          imageUrl = imageUrl.url;
-        } else {
-          imageUrl = '';
-        }
-      }
-
       const submitData = {
         bio: values.bio || '',
         services: values.services || [],
         ratePerDay: values.ratePerDay || 50,
-        location: values.location || '',
-        imageUrl
+        location: values.location || ''
       };
 
       try {
@@ -154,25 +127,6 @@ const SitterEdit = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleImageUpload = (info) => {
-    let newFileList = [...info.fileList];
-
-    if (info.file.status === 'done') {
-      const imageUrl = info.file.response.imageUrl || info.file.response.url;
-      message.success(t('sitterEdit.uploadSuccess'));
-      form.setFieldsValue({ imageUrl });
-      updatePreviewData('imageUrl', imageUrl);
-      setSitterProfile(prev => ({ ...prev, imageUrl }));
-      newFileList = newFileList.map(file =>
-        file.uid === info.file.uid ? { ...file, url: imageUrl, status: 'done' } : file
-      );
-    } else if (info.file.status === 'error') {
-      message.error(t('sitterEdit.uploadFailed'));
-    }
-
-    setFileList(newFileList);
   };
 
   const getPetTypeOptions = () => [
@@ -204,19 +158,7 @@ const SitterEdit = () => {
           layout="vertical"
           onFinish={handleSubmit}
           onValuesChange={(changedValues, allValues) => {
-            // 將 imageUrl 正規化為字串，避免出現 startsWith 不是函式的錯誤
-            const normalized = { ...allValues };
-            if (Object.prototype.hasOwnProperty.call(changedValues, 'imageUrl')) {
-              const v = changedValues.imageUrl;
-              let url = '';
-              if (typeof v === 'string') {
-                url = v;
-              } else if (v && typeof v === 'object') {
-                url = v.file?.response?.imageUrl || v.file?.response?.url || v.url || '';
-              }
-              normalized.imageUrl = url;
-            }
-            setPreviewData(prev => ({ ...prev, ...normalized }));
+            setPreviewData(prev => ({ ...prev, ...allValues }));
           }}
         >
           <Row gutter={[24, 0]}>
@@ -251,80 +193,26 @@ const SitterEdit = () => {
                 </Row>
               </Card>
 
-              <Card title={t('sitterEdit.photoDisplay')}>
-                <Form.Item
-                  name="imageUrl"
-                  label={t('sitterEdit.personalPhoto')}
-                  // 將 Upload 的事件轉成字串 URL 存入表單
-                  getValueFromEvent={(e) => {
-                    if (!e) return form.getFieldValue('imageUrl') || '';
-                    const url = e.file?.response?.imageUrl || e.file?.response?.url || e.file?.url || '';
-                    return url;
-                  }}
-                >
-                  <Upload
-                    name="image"
-                    listType="picture-card"
-                    fileList={fileList}
-                    action={`${process.env.REACT_APP_API_URL || 'https://web-production-3ab4f.up.railway.app'}/api/upload`}
-                    headers={{ Authorization: `Bearer ${localStorage.getItem('token')}` }}
-                    onChange={handleImageUpload}
-                    beforeUpload={(file) => {
-                      const isImage = file.type.startsWith('image/');
-                      if (!isImage) {
-                        message.error(t('sitterEdit.onlyImages'));
-                        return false;
-                      }
-                      const isLt5M = file.size / 1024 / 1024 < 5;
-                      if (!isLt5M) {
-                        message.error(t('sitterEdit.imageSizeLimit'));
-                        return false;
-                      }
-                      return true;
-                    }}
-                  >
-                    <div>
-                      <UploadOutlined />
-                      <div style={{ marginTop: 8 }}>{t('sitterEdit.uploadPhoto')}</div>
-                    </div>
-                  </Upload>
-                </Form.Item>
-              </Card>
+              {/* 照片展示功能已移除 */}
             </Col>
 
             <Col xs={24} lg={8}>
               <Card title={t('sitterEdit.preview')}>
                 <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                  {previewData.imageUrl && typeof previewData.imageUrl === 'string' ? (
-                    <img
-                      src={previewData.imageUrl}
-                      alt={t('sitterEdit.personalPhoto')}
-                      style={{
-                        width: '80px',
-                        height: '80px',
-                        borderRadius: '50%',
-                        objectFit: 'cover',
-                        margin: '0 auto 12px',
-                        display: 'block'
-                      }}
-                      onError={(e) => (e.target.style.display = 'none')}
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        width: '80px',
-                        height: '80px',
-                        borderRadius: '50%',
-                        backgroundColor: '#1890ff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white'
-                      }}
-                    >
-                      <UserOutlined />
-                    </div>
-                  )}
+                  <div
+                    style={{
+                      width: '80px',
+                      height: '80px',
+                      borderRadius: '50%',
+                      backgroundColor: '#1890ff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white'
+                    }}
+                  >
+                    <UserOutlined />
+                  </div>
                   <Text strong>{user?.name}</Text>
                 </div>
 
